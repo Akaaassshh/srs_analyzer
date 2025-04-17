@@ -7,6 +7,7 @@ from utils.project_generator import generate_project_structure, setup_virtual_en
 import tempfile
 import shutil
 import json
+import os
 
 
 
@@ -38,15 +39,21 @@ async def analyze_srs(file: UploadFile = File(...)):
     graph = build_langgraph()
     # Step 2: Run the LangGraph
     final_state = graph.invoke({"srs_text": srs_text})
+    print("===========================================================")
+    print(final_state["setup"])
      # Step 3: Parse db_schema
     try:
         db_schema_dict = json.loads(final_state["db_schema"])
         
+        print("===========================================================")
+        print(final_state["setup"])
         # Step 4: Create tables in PostgreSQL
         create_tables_from_schema(db_schema_dict)
         
         # Step 5: Generate project structure
         project_dir = os.path.join(os.getcwd(), "generated_project")
+        print("===========================================================")
+        print(final_state["setup"])
         success, message = generate_project_structure(final_state["setup"], project_dir)
         
         # Step 6: Set up virtual environment (optional)
