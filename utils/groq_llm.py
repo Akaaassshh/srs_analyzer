@@ -15,10 +15,16 @@ def llama3_chat(prompt: str) -> str:
         "max_tokens": 2048,
     }
 
-    res = requests.post(url, json=data, headers=headers)
-    if res.status_code == 200:
-        response = res.json()
-        print(response)
-        return response["choices"][0]["message"]["content"]
-    else:
-        raise Exception(f"Error: {res.status_code}, {res.text}")
+    try:
+        res = requests.post(url, json=data, headers=headers)
+        if res.status_code == 200:
+            response = res.json()
+            # Decode the response content to ensure UTF-8 compatibility
+            content = response["choices"][0]["message"]["content"]
+            return content.encode("utf-8").decode("utf-8")
+        else:
+            raise Exception(f"Error: {res.status_code}, {res.text}")
+    except UnicodeEncodeError as e:
+        raise Exception(f"Unicode Encoding Error: {str(e)}")
+    except Exception as e:
+        raise Exception(f"Error: {str(e)}")

@@ -4,6 +4,7 @@ from utils.preprocess import read_docx
 from graph_builder import build_langgraph
 from utils.db import create_tables_from_schema
 from utils.project_generator import generate_project_structure, setup_virtual_env
+from utils.documentation import generate_project_documentation
 import tempfile
 import shutil
 import json
@@ -56,12 +57,15 @@ async def analyze_srs(file: UploadFile = File(...)):
         print(final_state["setup"])
         success, message = generate_project_structure(final_state["setup"], project_dir)
         
-        # Step 6: Set up virtual environment (optional)
+        # Step 6: Set up virtual environment
         if success:
             env_success, env_message = setup_virtual_env(project_dir)
         else:
             env_success = False
             env_message = "Skipped due to project generation failure"
+
+         # Step 7: Generate documentation
+        doc_files = generate_project_documentation(final_state)
             
         return {
             "status": "success",
@@ -76,6 +80,12 @@ async def analyze_srs(file: UploadFile = File(...)):
                     "success": env_success,
                     "message": env_message
                 }
+            },
+             "documentation": {
+                "readme": f"/docs/static/{os.path.basename(doc_files['readme'])}",
+                "api_documentation": f"/docs/static/{os.path.basename(doc_files['api_doc'])}",
+                "workflow_diagram": f"/docs/static/{os.path.basename(doc_files['workflow_diagram'])}",
+                "workflow_graph": f"/docs/static/{os.path.basename(doc_files['workflow_graph'])}"
             }
         }
     except json.JSONDecodeError as e:
