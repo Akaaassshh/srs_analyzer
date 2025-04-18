@@ -59,7 +59,12 @@ def setup_node(state):
 │── requirements.txt
 │── .env
 │── README.md
- 
+
+a.	Follow Test-Driven Development (TDD) principles.
+b.	Generate test cases 
+c.	Use pytest for running tests and validating test coverage.
+d.	Ensure tests cover all functional aspects, including edge cases.
+
     API Definitions:
     {api_endpoints}
     BUSINESS LOGIC:
