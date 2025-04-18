@@ -3,6 +3,8 @@ import json
 import subprocess
 import sys
 from pathlib import Path
+from utils.code_validator import validate_and_refine_project
+
 
 def generate_project_structure(structure_json: dict, output_dir: str = None):
     try:
@@ -13,7 +15,7 @@ def generate_project_structure(structure_json: dict, output_dir: str = None):
        
         # Default to generating in the srs_analyzer directory
         if output_dir is None:
-            output_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "generated_project")
+            output_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "LMS")
         
         # Create base directory
         base_dir = Path(output_dir)
@@ -30,7 +32,11 @@ def generate_project_structure(structure_json: dict, output_dir: str = None):
         # For Windows, also create a setup.bat file
         if os.name == 'nt' and not (base_dir / "setup.bat").exists() and setup_file.exists():
             create_windows_batch_file(setup_file, base_dir / "setup.bat")
-        
+
+        # #Validating and refine generated code
+        refinement_stats = validate_and_refine_project(str(base_dir))
+
+
         print(f"✅ Project structure generated successfully in {output_dir}")
         return True, f"Project created in {output_dir}"
     except json.JSONDecodeError as e:
